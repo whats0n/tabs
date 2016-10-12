@@ -50,8 +50,6 @@
 			};
 
 			this._activeNum = newIndex;
-
-			console.log(window.history);
 		}
 
 		_showInitial(attr) {
