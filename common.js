@@ -22,7 +22,7 @@
 			this._activeNum = initialCall.num;
 			this._showActive(this._activeNum, initialCall.name);
 
-			window.addEventListener('popstate', function(e) {
+			window.addEventListener('hashchange', function(e) {
 				let state = window.history.state;
 				if (state) {
 					this._showActive(state.activeTab);
