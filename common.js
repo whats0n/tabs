@@ -9,12 +9,14 @@
 			this._btns = doc.querySelectorAll(config.button);
 			this._section = doc.querySelectorAll(config.section);
 
+			//attributes
 			this._active = config.activeClass;
-			this._tabAttr = 'data-tab';
-			this._btnAttr = 'data-tab';
+			this._tabAttr = config.sectionAttr;
+			this._btnAttr = config.buttonAttr;
 
+			//initial tab on load
 			let initialCall = this._showInitial(window.location.hash);
-
+			//active tab number
 			this._activeNum = initialCall.num;
 			this._setActive(this._activeNum, initialCall.name);
 
@@ -24,7 +26,6 @@
 				} else if (!window.history.state && !window.location.hash) {
 					this._setActive(0);
 				}
-
 			}.bind(this), false);
 
 			Array.prototype.forEach.call(this._btns, function(btn, i) {
@@ -75,7 +76,9 @@
 	new Tabs({
 		button: '.js-tabs-btn',
 		section: '.js-tabs-section',
-		activeClass: 'active'
+		activeClass: 'active',
+		buttonAttr: 'data-tab',
+		setionAttr: 'data-tab'
 	});
 
 })();
