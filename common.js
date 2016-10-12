@@ -5,50 +5,55 @@
 		constructor(config) {
 
 			let doc = document;
-
+			//get dom elements
 			this._btns = doc.querySelectorAll(config.button);
 			this._section = doc.querySelectorAll(config.section);
 
-			//attributes
-			this._active = config.activeClass;
-			this._tabAttr = config.sectionAttr;
-			this._btnAttr = config.buttonAttr;
+			//active class and names of attributes
+			this._active = config.activeClass || 'is-active';
+			this._tabAttr = config.sectionAttr || 'data-tab';
+			this._btnAttr = config.buttonAttr || 'data-tab';
 
 			//initial tab on load
 			let initialCall = this._showInitial(window.location.hash);
 			//active tab number
 			this._activeNum = initialCall.num;
-			this._setActive(this._activeNum, initialCall.name);
+			this._showActive(this._activeNum, initialCall.name);
 
 			window.addEventListener('popstate', function(e) {
-				if (window.history.state) {
-					this._setActive(window.history.state.activeTab);
-				} else if (!window.history.state && !window.location.hash) {
-					this._setActive(0);
+				let state = window.history.state;
+				if (state) {
+					this._showActive(state.activeTab);
+				} else if (!state && !window.location.hash) {
+					//show first tab, if the hash-value is empty or wrong
+					this._showActive(0);
 				}
 			}.bind(this), false);
 
 			Array.prototype.forEach.call(this._btns, function(btn, i) {
+				//current tab
+				let currentName = btn.getAttribute(this._btnAttr);
+
 				btn.addEventListener('click', function() {
-					let attr = btn.getAttribute(this._btnAttr);
-					this._setActive(i, attr);
+					this._showActive(i, currentName);
 				}.bind(this), false);
+
 			}.bind(this));
 		}
 
-		_setActive(newIndex, tabName) {
-
+		_showActive(newIndex, tabName) {
+			
 			this._btns[this._activeNum].classList.remove(this._active);
-			this._btns[newIndex].classList.add(this._active);
 			this._section[this._activeNum].classList.remove(this._active);
+			this._btns[newIndex].classList.add(this._active);
 			this._section[newIndex].classList.add(this._active);
-
+			//set active tab number in history and change url
 			if (tabName) {
 				window.history.pushState({
 					activeTab: newIndex
 				}, tabName,`#${tabName}`);
 			};
-
+			//set new active tab number
 			this._activeNum = newIndex;
 		}
 
@@ -57,6 +62,7 @@
 			let name = '';
 
 			Array.prototype.forEach.call(this._section, function(tab, i) {
+				//find active initial tab by hash-value
 				if (tab.getAttribute(this._tabAttr) === attr.replace('#', '')) {
 					num = i;
 					name = tab.getAttribute(this._tabAttr);
