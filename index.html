@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>TABS!</title>
+	<style>
+		.tabs {
+			text-align: center;
+		}
+		.tabs__link {
+			display: inline-block;
+			vertical-align: top;
+			padding: 8px 12px;
+			margin: 0 12px;
+			background: gold;
+			color: #333;
+			cursor: pointer;
+			transition: transform 0.25s ease-in;
+		}
+		.tabs__link.active {
+			transform: translateY(-10px);
+		}
+		.tabs__section {
+			display: none;
+			padding: 20px;
+			margin: 0 0 20px;
+			border: 2px solid black;
+		}
+		.tabs__section.active {
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<div class="tabs">
+		<ul>
+			<li class="tabs__link js-tabs-btn" data-tab="tab1">TAB-1</li>
+			<li class="tabs__link js-tabs-btn" data-tab="tab2">TAB-2</li>
+			<li class="tabs__link js-tabs-btn" data-tab="tab3">TAB-3</li>
+		</ul>
+		<div>
+			<div class="tabs__section js-tabs-section" data-tab="tab1">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore soluta, ad eum! Amet, ullam qui. Saepe neque, nostrum doloribus similique!</div>
+			<div class="tabs__section js-tabs-section" data-tab="tab2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa architecto obcaecati fugiat incidunt illum, ratione asperiores temporibus nam eum voluptatem!</div>
+			<div class="tabs__section js-tabs-section" data-tab="tab3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi iure, ipsum aspernatur doloribus ad deserunt itaque alias, deleniti odio. Suscipit?</div>
+		</div>
+	</div>
+	<script src="common.js"></script>
+</body>
+</html>
