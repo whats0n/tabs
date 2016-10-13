@@ -44,7 +44,6 @@
 
 			});
 
-			console.log('a');
 		}
 
 		_showActive(tabName) {
