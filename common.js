@@ -1,4 +1,8 @@
-(function() {
+(function(func) {
+
+	window.Tabs = func();
+
+} (function() {
 
 	class Tabs {
 
@@ -10,8 +14,7 @@
 			this._sections = doc.querySelectorAll(config.section);
 
 			//active class and names of attributes
-			this._modes = ['display', 'class']
-			this._mode = config.mode || this._modes[0];
+			this._className = config.className;
 			this._active = config.activeClass || 'is-active';
 			this._tabAttr = config.sectionAttr || 'data-tab';
 			this._btnAttr = config.buttonAttr || 'data-tab';
@@ -21,49 +24,36 @@
 
 			this._showActive(initialCall);
 
-			window.addEventListener('hashchange', function(e) {
-				let state = window.history.state;
-				if (state) {
-					this._showActive(state.activeTab);
-					// this._pushState(state.activeTab);
-				} else if (!state) {
-					//show first tab, if the hash-value is empty or wrong
-					if (window.location.hash) {
-						this._showActive(window.location.hash.replace('#', ''));
-					} else {
-						this._showActive();
-					};
-				}
-			}.bind(this), false);
+			window.addEventListener('hashchange', (e) => {
+				this._showActive(window.location.hash.replace('#', ''));
+			}, false);
 
-			Array.prototype.forEach.call(this._btns, function(btn, i) {
+			Array.prototype.forEach.call(this._btns, (btn) => {
 				//current tab
 				let currentName = btn.getAttribute(this._btnAttr);
 
-				btn.addEventListener('click', function() {
+				btn.addEventListener('click', () => {
 					this._showActive(currentName);
 					this._pushState(currentName);
-				}.bind(this), false);
+				}, false);
 
-			}.bind(this));
+			});
+
+			console.log('a');
 		}
 
 		_showActive(tabName) {
-			let active;
 
-			if (tabName) {
-				active = tabName;
-			} else {
-				active = this._btns[0].getAttribute(this._btnAttr);
-			}
+			tabName = (!tabName)
+				? tabName = this._btns[0].getAttribute(this._btnAttr)
+				: tabName;
 
-			this._showActiveTab(this._btns, this._btnAttr, active);
+			this._showCurrent(this._btns, this._btnAttr, tabName);
 
-			if (this._mode === this._modes[1]) {
-				this._showActiveTab(this._sections, this._tabAttr, active);
-			} else {
-				this._showActiveTabByDisplay(this._sections, active);
-			};
+			this._className
+				? this._showCurrent(this._sections, this._tabAttr, tabName)
+				: this._showActiveTabByDisplay(this._sections, tabName);
+
 		}
 
 		_pushState(tabName) {
@@ -72,54 +62,60 @@
 			}, tabName,`#${tabName}`);
 		}
 
-		_showActiveTab(collection, collectionAttr, attr) {
-			Array.prototype.forEach.call(collection, function(item) {
-				if (item.getAttribute(collectionAttr) == attr) {
-					item.classList.add(this._active);
-				} else {
-					item.classList.remove(this._active);
-				}
-			}.bind(this));
+		_showCurrent(collection, collectionAttr, attr) {
+
+			Array.prototype.forEach.call(collection, (item) => {
+				item.getAttribute(collectionAttr) == attr
+					? item.classList.add(this._active)
+					: item.classList.remove(this._active);
+			});
+
 		}
 
 		_showActiveTabByDisplay(collection, attr) {
-			Array.prototype.forEach.call(collection, function(item) {
-				if (item.getAttribute(this._tabAttr) == attr) {
-					item.style.display = 'block';
-				} else {
-					item.style.display = 'none';
-				}
-			}.bind(this));
+
+			Array.prototype.forEach.call(collection, (item) => {
+
+				item.getAttribute(this._tabAttr) == attr
+					? item.style.display = 'block'
+					: item.style.display = 'none';
+
+			});
+
 		}
 
 		_showInitial(attr) {
 			let name = null;
 
-			Array.prototype.forEach.call(this._sections, function(tab, i) {
-				let currentValue = tab.getAttribute(this._tabAttr);
-				//if mode is not 'class' - hide sections by display
-				if (this._mode !== this._modes[1]) {
-					tab.style.display = 'none';
-				}
-				//find active initial tab by hash-value
-				if (currentValue === attr.replace('#', '')) {
-					name = currentValue;
-					// this._pushState(currentValue);
-				}
-			}.bind(this));
+			Array.prototype.forEach.call(this._sections, (tab) => {
 
-			return name
+				let currentValue = tab.getAttribute(this._tabAttr);
+				//if className: false - hide sections by display
+				(!this._className)
+					? tab.style.display = 'none'
+					: null;
+
+				(currentValue === attr.replace('#', ''))
+					? name = currentValue
+					: null;
+
+			});
+
+			return name;
 		}
 
 	}
 
-	new Tabs({
-		button: '.js-tabs-btn',
-		section: '.js-tabs-section',
-		activeClass: 'active',
-		mode: 'class',
-		buttonAttr: 'data-tab',
-		setionAttr: 'data-tab'
-	});
+	return Tabs;
 
-})();
+}));
+
+
+let nt = new Tabs({
+	button: '.js-tabs-btn',
+	section: '.js-tabs-section',
+	activeClass: 'active',
+	className: true,
+	buttonAttr: 'data-tab',
+	setionAttr: 'data-tab'
+});
