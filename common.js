@@ -48,8 +48,10 @@
 
 		_showActive(tabName) {
 
+			window.location.hash = tabName;
+
 			tabName = (!tabName)
-				? tabName = this._btns[0].getAttribute(this._btnAttr)
+				? this._btns[0].getAttribute(this._btnAttr)
 				: tabName;
 
 			this._showCurrent(this._btns, this._btnAttr, tabName);
@@ -61,9 +63,9 @@
 		}
 
 		_pushState(tabName) {
-			window.history.pushState({
-				activeTab: tabName
-			}, tabName,`#${tabName}`);
+			// window.history.pushState({
+			// 	activeTab: tabName
+			// }, tabName,`#${tabName}`);
 		}
 
 		_showCurrent(collection, collectionAttr, attr) {
@@ -115,7 +117,7 @@
 }));
 
 
-let nt = new Tabs({
+new Tabs({
 	button: '.js-tabs-btn',
 	section: '.js-tabs-section',
 	activeClass: 'active',
