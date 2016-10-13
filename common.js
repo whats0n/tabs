@@ -20,12 +20,17 @@
 			this._btnAttr = config.buttonAttr || 'data-tab';
 
 			//initial tab on load
-			let initialCall = this._showInitial(window.location.hash);
+			let initialCall = this._checkHash(window.location.hash);
 
 			this._showActive(initialCall);
 
 			window.addEventListener('hashchange', (e) => {
-				this._showActive(window.location.hash.replace('#', ''));
+				let hash = window.location.hash.replace('#', '');
+
+				this._checkHash(hash)
+					? this._showActive(hash)
+					: null;
+
 			}, false);
 
 			Array.prototype.forEach.call(this._btns, (btn) => {
@@ -84,7 +89,7 @@
 
 		}
 
-		_showInitial(attr) {
+		_checkHash(attr) {
 			let name = null;
 
 			Array.prototype.forEach.call(this._sections, (tab) => {
