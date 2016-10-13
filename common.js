@@ -7,7 +7,7 @@
 			let doc = document;
 			//get dom elements
 			this._btns = doc.querySelectorAll(config.button);
-			this._section = doc.querySelectorAll(config.section);
+			this._sections = doc.querySelectorAll(config.section);
 
 			//active class and names of attributes
 			this._modes = ['display', 'class']
@@ -18,17 +18,21 @@
 
 			//initial tab on load
 			let initialCall = this._showInitial(window.location.hash);
-			//active tab number
-			this._activeNum = initialCall.num;
-			this._showActive(this._activeNum, initialCall.name);
+
+			this._showActive(initialCall);
 
 			window.addEventListener('hashchange', function(e) {
 				let state = window.history.state;
 				if (state) {
 					this._showActive(state.activeTab);
-				} else if (!state && !window.location.hash) {
+					// this._pushState(state.activeTab);
+				} else if (!state) {
 					//show first tab, if the hash-value is empty or wrong
-					this._showActive(0);
+					if (window.location.hash) {
+						this._showActive(window.location.hash.replace('#', ''));
+					} else {
+						this._showActive();
+					};
 				}
 			}.bind(this), false);
 
@@ -37,57 +41,74 @@
 				let currentName = btn.getAttribute(this._btnAttr);
 
 				btn.addEventListener('click', function() {
-					this._showActive(i, currentName);
+					this._showActive(currentName);
+					this._pushState(currentName);
 				}.bind(this), false);
 
 			}.bind(this));
 		}
 
-		_showActive(newIndex, tabName) {
+		_showActive(tabName) {
+			let active;
 
-			this._btns[this._activeNum].classList.remove(this._active);
-			this._btns[newIndex].classList.add(this._active);
+			if (tabName) {
+				active = tabName;
+			} else {
+				active = this._btns[0].getAttribute(this._btnAttr);
+			}
+
+			this._showActiveTab(this._btns, this._btnAttr, active);
 
 			if (this._mode === this._modes[1]) {
-				//if mode is 'class' - show/hide by class
-				this._section[this._activeNum].classList.remove(this._active);
-				this._section[newIndex].classList.add(this._active);
+				this._showActiveTab(this._sections, this._tabAttr, active);
 			} else {
-				//if mode is not 'class' - show/hide by display
-				this._section[this._activeNum].style.display = 'none';
-				this._section[newIndex].style.display = 'block';
+				this._showActiveTabByDisplay(this._sections, active);
 			};
-			//set active tab number in history and change url
-			if (tabName) {
-				window.history.pushState({
-					activeTab: newIndex
-				}, tabName,`#${tabName}`);
-			};
-			//set new active tab number
-			this._activeNum = newIndex;
+		}
+
+		_pushState(tabName) {
+			window.history.pushState({
+				activeTab: tabName
+			}, tabName,`#${tabName}`);
+		}
+
+		_showActiveTab(collection, collectionAttr, attr) {
+			Array.prototype.forEach.call(collection, function(item) {
+				if (item.getAttribute(collectionAttr) == attr) {
+					item.classList.add(this._active);
+				} else {
+					item.classList.remove(this._active);
+				}
+			}.bind(this));
+		}
+
+		_showActiveTabByDisplay(collection, attr) {
+			Array.prototype.forEach.call(collection, function(item) {
+				if (item.getAttribute(this._tabAttr) == attr) {
+					item.style.display = 'block';
+				} else {
+					item.style.display = 'none';
+				}
+			}.bind(this));
 		}
 
 		_showInitial(attr) {
-			let num = 0;
-			let name = '';
+			let name = null;
 
-			Array.prototype.forEach.call(this._section, function(tab, i) {
-
-				//if mode is not 'class' - show/hide by display
+			Array.prototype.forEach.call(this._sections, function(tab, i) {
+				let currentValue = tab.getAttribute(this._tabAttr);
+				//if mode is not 'class' - hide sections by display
 				if (this._mode !== this._modes[1]) {
 					tab.style.display = 'none';
 				}
 				//find active initial tab by hash-value
-				if (tab.getAttribute(this._tabAttr) === attr.replace('#', '')) {
-					num = i;
-					name = tab.getAttribute(this._tabAttr);
+				if (currentValue === attr.replace('#', '')) {
+					name = currentValue;
+					// this._pushState(currentValue);
 				}
 			}.bind(this));
 
-			return {
-				num: num,
-				name: name
-			};
+			return name
 		}
 
 	}
